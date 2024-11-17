@@ -1,49 +1,50 @@
-# History files
-.Rhistory
-.Rapp.history
+# 2.CHECKLIST ANALISIS DATA EKSPLORATIF
+#Read in your data
+setwd("E:/R/ANDAT")
+getwd()
+data<-read.csv("datasatisfaction.csv", sep = ",", header = TRUE)
+data
 
-# Session Data files
-.RData
-.RDataTmp
+#Check the packaging
+nrow(data)
+ncol(data)
+str(data)
 
-# User-specific files
-.Ruserdata
+#Look at the top and the bottom of your data
+head(data)
+tail(data)
 
-# Example code in package build process
-*-Ex.R
+#Check your “n”s
+library(dplyr)
+dim(data) 
+satisfaction<-data %>% filter(!is.na(data$pengalaman.keseluruhan) & !is.na(data$kecepatan.pengiriman)) 
+satisfaction
+dim(satisfaction)
 
-# Output files from R CMD build
-/*.tar.gz
+#Validate with at least one external data source
+summary(satisfaction$kecepatan.pengiriman)
+quantile(satisfaction$kecepatan.pengiriman)
+ 
+#Make a plot 
+library(ggplot2)
+ggplot(satisfaction, aes(kecepatan.pengiriman,pengalaman.keseluruhan)) + geom_boxplot(colour="purple")
+ 
+#Try the easy solution first 
+ggplot(satisfaction, aes(kecepatan.pengiriman, pengalaman.keseluruhan)) + geom_abline(colour="purple") 
 
-# Output files from R CMD check
-/*.Rcheck/
+ 
+#Follow up
+y=satisfaction$pengalaman.keseluruhan
+x=satisfaction$kecepatan.pengiriman
+lm(y~x, data = satisfaction)
+model=lm(y~x)
+summary(model) 
+anova(model) 
 
-# RStudio files
-.Rproj.user/
-
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-.httr-oauth
-
-# knitr and R markdown default cache directories
-*_cache/
-/cache/
-
-# Temporary files created by R markdown
-*.utf8.md
-*.knit.md
-
-# R Environment Variables
-.Renviron
-
-# pkgdown site
-docs/
-
-# translation temp files
-po/*~
-
-# RStudio Connect folder
-rsconnect/
+# 3.MENGGUNAKAN MODEL UNTUK MENGEKSPOR DATA 
+#Histogram variabel dependen    
+set.seed(1) 
+x = rnorm(1000,mean=3.324229,sd=1.422923) 
+y = satisfaction$pengalaman.keseluruhan 
+hist(y, breaks = 10, probability = TRUE, col = c("purple"), lty = 2) 
+curve(dnorm(x, mean = 3.324229, sd = 1.422923), add = TRUE)  
